@@ -1,28 +1,26 @@
-import pandas as pd
-
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report
-
-#the dataset
-from ucimlrepo import fetch_ucirepo 
-#Other Files
+from ucimlrepo import fetch_ucirepo
 from model import model
 
-#Main
 def main():
-    print("ML Proj\n")
-    # fetch dataset 
-    automobile = fetch_ucirepo(id=10) 
-    # data (as pandas dataframes) 
-    x = automobile.data.features 
-    y = automobile.data.targets 
-    d = automobile.data.labels
-    print(x.head) 
-    print(y.head) 
-    print(d.head)
+    automobile = fetch_ucirepo(id=10)
 
-#special var
+    # Keep each engine-size example paired with its price; remove rows missing either value.
+    data = automobile.data.features[["engine-size"]].join(
+        automobile.data.targets[["price"]]
+    ).dropna()
+
+    # Scale values so gradient descent can learn with the model's current learning rate.
+    engine_size = data["engine-size"].to_numpy(dtype=float) / 100
+    price = data["price"].to_numpy(dtype=float) / 50000
+
+    trainer = model()
+    trainer.fit(engine_size, price, epochs=1000)
+
+    predictions = trainer.predict(engine_size)
+    print(f"Training examples: {len(engine_size)}")
+    print(f"Training MSE (scaled): {trainer.MSE(price, predictions):.6f}")
+    print(f"First predicted price: ${predictions[0] * 50000:.2f}")
+
+
 if __name__ == "__main__":
     main()
