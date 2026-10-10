@@ -21,7 +21,7 @@ class model:
     def predict(self, feature):
         return self.weight * feature + self.bias
 
-    def fit(self, feature, y_true, epochs=1000):
+    def fit(self, feature, y_true, epochs=100):
         for _ in range(epochs):
             y_pred = self.predict(feature)
             self.newweight(y_true, y_pred, feature)
