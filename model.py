@@ -14,6 +14,15 @@ class model:
         return (2 * (y_pred - y_true)).mean()
     
     def newweight(self,y_true, y_pred, feature):
-        self.weight = self.weight - (0.1 * self.calculateweightslope(feature,y_true,y_pred))
+        self.weight = self.weight - (0.01 * self.calculateweightslope(feature,y_true,y_pred))
     def newbias(self,y_true, y_pred):
-        self.bias = self.bias - (0.1 * self.calculatebiasslope(y_true,y_pred))
+        self.bias = self.bias - (0.01 * self.calculatebiasslope(y_true,y_pred))
+
+    def predict(self, feature):
+        return self.weight * feature + self.bias
+
+    def fit(self, feature, y_true, epochs=1000):
+        for _ in range(epochs):
+            y_pred = self.predict(feature)
+            self.newweight(y_true, y_pred, feature)
+            self.newbias(y_true, y_pred)
