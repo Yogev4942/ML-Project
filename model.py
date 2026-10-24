@@ -21,8 +21,19 @@ class model:
     def predict(self, feature):
         return self.weight * feature + self.bias
 
-    def fit(self, feature, y_true, epochs=100):
-        for _ in range(epochs):
+    def fit(self, feature, y_true, epochs=1000):
+        for epoch in range(epochs):
             y_pred = self.predict(feature)
-            self.newweight(y_true, y_pred, feature)
-            self.newbias(y_true, y_pred)
+
+            weight_gradient = self.calculateweightslope(
+                feature, y_true, y_pred
+            )
+            bias_gradient = self.calculatebiasslope(y_true, y_pred)
+
+            self.weight -= 0.01 * weight_gradient
+            self.bias -= 0.01 * bias_gradient
+
+            if epoch % 100 == 0:
+                predictions = self.predict(feature)
+                loss = self.MSE(y_true, predictions)
+                print(f"Epoch {epoch}: MSE = {loss:.6f}")
